@@ -6,16 +6,21 @@
     <title>MCHD Travel Expense Account Settlement Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .bordered { border: 1px solid black; }
-        .relative { position: relative; }
-        .bg-gray-200 { background-color: #f9fafb; }
+        .bordered { border: 1px solid #ddd; }
+        .bg-gray-200 { background-color: #f7f7f7; }
+        .bg-gray-100 { background-color: #fafafa; }
         .text-center { text-align: center; }
         .font-bold { font-weight: bold; }
+        .rounded-lg { border-radius: 8px; }
+        .shadow { box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        .p-4 { padding: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
     </style>
 </head>
 <body class="p-8 bg-gray-100">
 
-    <div class="bordered p-8 bg-white rounded-lg shadow-lg relative">
+    <div class="bordered p-8 bg-white rounded-lg shadow">
         <h1 class="text-center font-bold text-xl mb-4">MCHD Travel Expense Account Settlement Form</h1>
 
         <!-- Instructions Section -->
@@ -29,15 +34,15 @@
 
         <!-- Travel Details Section -->
         <div class="grid grid-cols-3 gap-4 mb-4">
-            <div><label class="font-bold">Name:</label> <input type="text" class="border p-2 w-full"></div>
-            <div><label class="font-bold">Mileage Rate:</label> <input type="text" value="$0.67" class="border p-2 w-full" readonly></div>
-            <div><label class="font-bold">Total Miles:</label> <input type="number" id="totalMiles" class="border p-2 w-full" oninput="calculateMileage()"></div>
+            <div><label class="font-bold">Name:</label> <input type="text" class="border p-2 w-full rounded"></div>
+            <div><label class="font-bold">Mileage Rate:</label> <input type="text" value="$0.67" class="border p-2 w-full rounded" readonly></div>
+            <div><label class="font-bold">Total Miles:</label> <input type="number" id="totalMiles" class="border p-2 w-full rounded" oninput="calculateMileage()"></div>
         </div>
 
         <!-- Expense Table -->
-        <table class="w-full mt-4 bordered">
+        <table class="w-full mt-4 bordered text-center">
             <thead>
-                <tr class="bg-gray-400">
+                <tr class="bg-gray-200">
                     <th class="bordered p-2">Date of Travel</th>
                     <th class="bordered p-2">From</th>
                     <th class="bordered p-2">To</th>
@@ -52,19 +57,18 @@
                 </tr>
             </thead>
             <tbody id="expenseTableBody">
-                <!-- Example Row for First Day (will apply 75%) -->
-                <tr class="bg-gray-200">
-                    <td class="bordered p-2"><input type="date" class="border p-2 w-full"></td>
-                    <td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
-                    <td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculateMileageAmount(this)"></td>
+                <tr class="bg-gray-100">
+                    <td class="bordered p-2"><input type="date" class="border p-2 w-full rounded"></td>
+                    <td class="bordered p-2"><input type="text" class="border p-2 w-full rounded"></td>
+                    <td class="bordered p-2"><input type="text" class="border p-2 w-full rounded"></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculateMileageAmount(this)"></td>
                     <td class="bordered p-2"><span class="mileageAmount">$0.00</span></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                    <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0"></td>
-                    <td class="bordered p-2 text-center"><span class="totalPerDay">0.00</span></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
+                    <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0"></td>
+                    <td class="bordered p-2 text-center"><span class="totalPerDay">$0.00</span></td>
                 </tr>
             </tbody>
         </table>
@@ -77,88 +81,111 @@
         <!-- Summary Section -->
         <div class="grid grid-cols-2 gap-4 mt-8">
             <div class="font-bold">Total:</div><div><span id="totalAmount">$0.00</span></div>
-            <div class="font-bold">Less Cash Advance:</div><div><input type="number" class="border p-2 w-full" oninput="calculateBalance()"></div>
+            <div class="font-bold">Less Cash Advance:</div><div><input type="number" class="border p-2 w-full rounded" oninput="calculateBalance()"></div>
             <div class="font-bold">Due Employee:</div><div><span id="dueEmployee">$0.00</span></div>
             <div class="font-bold">Due MCHD:</div><div><span id="dueMCHD">$0.00</span></div>
         </div>
 
         <!-- Signature Section -->
-        <div class="mt-8 p-4 bordered bg-gray-100 rounded">
+        <div class="mt-8 p-4 bordered bg-gray-100 rounded-lg">
             <p>By typing my name below, I acknowledge this as my electronic signature.</p>
             <div class="flex space-x-4 mt-2">
                 <div>
                     <label class="font-bold">Employee Signature:</label>
-                    <input type="text" class="border p-2 w-full" required>
+                    <input type="text" class="border p-2 w-full rounded" required>
                 </div>
                 <div>
                     <label class="font-bold">Date:</label>
-                    <input type="date" class="border p-2" required>
+                    <input type="date" class="border p-2 rounded" required>
                 </div>
                 <div>
                     <label class="font-bold">Supervisor Approval:</label>
-                    <input type="text" class="border p-2 w-full" required>
+                    <input type="text" class="border p-2 w-full rounded" required>
                 </div>
                 <div>
                     <label class="font-bold">Date:</label>
-                    <input type="date" class="border p-2" required>
+                    <input type="date" class="border p-2 rounded" required>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript Functions -->
     <script>
         const mileageRate = 0.67;
 
-		function calculateMileageAmount(input) {
-			const miles = parseFloat(input.value) || 0;
-			const mileageAmount = miles * mileageRate;
-			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
-			calculateTotal();
-		}
+        function calculateMileageAmount(input) {
+            const miles = parseFloat(input.value) || 0;
+            const mileageAmount = miles * mileageRate;
+            input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
+            calculateTotal();
+        }
 
-		function calculatePerDiem(input) {
-			const row = input.closest('tr');
-			const rowIndex = Array.from(document.getElementById("expenseTableBody").rows).indexOf(row);
-			const isFirstOrLastDay = (rowIndex === 0 || rowIndex === document.getElementById("expenseTableBody").rows.length - 1);
+        function calculatePerDiem(input) {
+            const row = input.closest('tr');
+            const rowIndex = Array.from(document.getElementById("expenseTableBody").rows).indexOf(row);
+            const isFirstOrLastDay = (rowIndex === 0 || rowIndex === document.getElementById("expenseTableBody").rows.length - 1);
 
-			const breakfast = parseFloat(row.querySelectorAll('input[type="number"]')[1].value) || 0;
-			const lunch = parseFloat(row.querySelectorAll('input[type="number"]')[2].value) || 0;
-			const dinner = parseFloat(row.querySelectorAll('input[type="number"]')[3].value) || 0;
-			const incidentals = parseFloat(row.querySelectorAll('input[type="number"]')[4].value) || 0;
-			const other = parseFloat(row.querySelectorAll('input[type="number"]')[5].value) || 0;
+            const breakfast = parseFloat(row.querySelectorAll('input[type="number"]')[1].value) || 0;
+            const lunch = parseFloat(row.querySelectorAll('input[type="number"]')[2].value) || 0;
+            const dinner = parseFloat(row.querySelectorAll('input[type="number"]')[3].value) || 0;
+            const incidentals = parseFloat(row.querySelectorAll('input[type="number"]')[4].value) || 0;
+            const other = parseFloat(row.querySelectorAll('input[type="number"]')[5].value) || 0;
 
-			const adjustedBreakfast = isFirstOrLastDay ? breakfast * 0.75 : breakfast;
-			const adjustedLunch = isFirstOrLastDay ? lunch * 0.75 : lunch;
-			const adjustedDinner = isFirstOrLastDay ? dinner * 0.75 : dinner;
-			const adjustedIncidentals = isFirstOrLastDay ? incidentals * 0.75 : incidentals;
-			const adjustedOther = isFirstOrLastDay ? other * 0.75 : other;
+            const adjustedBreakfast = isFirstOrLastDay ? breakfast * 0.75 : breakfast;
+            const adjustedLunch = isFirstOrLastDay ? lunch * 0.75 : lunch;
+            const adjustedDinner = isFirstOrLastDay ? dinner * 0.75 : dinner;
+            const adjustedIncidentals = isFirstOrLastDay ? incidentals * 0.75 : incidentals;
+            const adjustedOther = isFirstOrLastDay ? other * 0.75 : other;
 
-			const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-			const totalPerDay = adjustedBreakfast + adjustedLunch + adjustedDinner + adjustedIncidentals + adjustedOther + mileageAmount;
-			
-			row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
-			calculateTotal();
-		}
+            const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+            const totalPerDay = adjustedBreakfast + adjustedLunch + adjustedDinner + adjustedIncidentals + adjustedOther + mileageAmount;
 
-		function calculateTotal() {
-			const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
-			const total = Array.from(rows).reduce((sum, row) => {
-				const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
-				return sum + perDayTotal;
-			}, 0);
+            row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
+            calculateTotal();
+        }
 
-			document.getElementById("totalAmount").innerText = `$${total.toFixed(2)}`;
-			calculateBalance();
-		}
+        function calculateTotal() {
+            const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
+            const total = Array.from(rows).reduce((sum, row) => {
+                const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
+                return sum + perDayTotal;
+            }, 0);
 
-		function calculateBalance() {
-			const total = parseFloat(document.getElementById("totalAmount").innerText.replace('$', '')) || 0;
-			const advance = parseFloat(document.querySelector("input[type='number']").value) || 0;
-			const dueEmployee = total > advance ? total - advance : 0;
-			const dueMCHD = advance > total ? advance - total : 0;
+            document.getElementById("totalAmount").innerText = `$${total.toFixed(2)}`;
+            calculateBalance();
+        }
 
-			document.getElementById("dueEmployee").innerText = `$${dueEmployee.toFixed(2)}`;
-			document.getElementById("dueMCHD").innerText = `$${dueMCHD.toFixed(2)}`;
+        function calculateBalance() {
+            const total = parseFloat(document.getElementById("totalAmount").innerText.replace('$', '')) || 0;
+            const advance = parseFloat(document.querySelector("input[type='number']").value) || 0;
+            const dueEmployee = total > advance ? total - advance : 0;
+            const dueMCHD = advance > total ? advance - total : 0;
+
+            document.getElementById("dueEmployee").innerText = `$${dueEmployee.toFixed(2)}`;
+            document.getElementById("dueMCHD").innerText = `$${dueMCHD.toFixed(2)}`;
+        }
+		
+		function addDayRow() {
+			const tableBody = document.getElementById('expenseTableBody');
+			const newRow = document.createElement('tr');
+			newRow.classList.add('bg-gray-200');
+
+			newRow.innerHTML = `
+				<td class="bordered p-2"><input type="date" class="border p-2 w-full"></td>
+				<td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
+				<td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculateMileageAmount(this)"></td>
+				<td class="bordered p-2"><span class="mileageAmount">$0.00</span></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
+				<td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0"></td>
+				<td class="bordered p-2 text-center"><span class="totalPerDay">$0.00</span></td>
+			`;
+
+			tableBody.appendChild(newRow);
 		}
     </script>
 </body>
