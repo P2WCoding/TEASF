@@ -109,67 +109,57 @@
     <script>
         const mileageRate = 0.67;
 
-        function calculateMileageAmount(input) {
-            const miles = parseFloat(input.value) || 0;
-            const mileageAmount = miles * mileageRate;
-            input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
-            calculateTotal();
-        }
+		function calculateMileageAmount(input) {
+			const miles = parseFloat(input.value) || 0;
+			const mileageAmount = miles * mileageRate;
+			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
+			calculateTotal();
+		}
 
-        function calculatePerDiem(input) {
-            const row = input.closest('tr');
-            const isFirstOrLastDay = row.rowIndex === 1 || row.rowIndex === document.getElementById("expenseTableBody").rows.length;
-            const total = Array.from(row.querySelectorAll('input[type="number"]'))
-                .slice(4, 9) // B, L, D, I, Other
-                .reduce((sum, input) => sum + (parseFloat(input.value) || 0), 0);
-            const adjustedTotal = isFirstOrLastDay ? total * 0.75 : total;
-            row.querySelector('.totalPerDay').innerText = `$${adjustedTotal.toFixed(2)}`;
-            calculateTotal();
-        }
+		function calculatePerDiem(input) {
+			const row = input.closest('tr');
+			const rowIndex = Array.from(document.getElementById("expenseTableBody").rows).indexOf(row);
+			const isFirstOrLastDay = (rowIndex === 0 || rowIndex === document.getElementById("expenseTableBody").rows.length - 1);
 
-        function calculateTotal() {
-            const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
-            const total = Array.from(rows).reduce((sum, row) => {
-                const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
-                return sum + perDayTotal;
-            }, 0);
-            document.getElementById("totalAmount").innerText = `$${total.toFixed(2)}`;
-        }
+			const breakfast = parseFloat(row.querySelectorAll('input[type="number"]')[1].value) || 0;
+			const lunch = parseFloat(row.querySelectorAll('input[type="number"]')[2].value) || 0;
+			const dinner = parseFloat(row.querySelectorAll('input[type="number"]')[3].value) || 0;
+			const incidentals = parseFloat(row.querySelectorAll('input[type="number"]')[4].value) || 0;
+			const other = parseFloat(row.querySelectorAll('input[type="number"]')[5].value) || 0;
 
-        function addDayRow() {
-            const tableBody = document.getElementById('expenseTableBody');
-            const newRow = document.createElement('tr');
-            newRow.classList.add('bg-gray-200');
-            newRow.innerHTML = `
-                <td class="bordered p-2"><input type="date" class="border p-2 w-full"></td>
-                <td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
-                <td class="bordered p-2"><input type="text" class="border p-2 w-full"></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculateMileageAmount(this)"></td>
-                <td class="bordered p-2"><span class="mileageAmount">$0.00</span></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0" oninput="calculatePerDiem(this)"></td>
-                <td class="bordered p-2"><input type="number" class="border p-2 w-full" value="0"></td>
-                <td class="bordered p-2 text-center"><span class="totalPerDay">$0.00</span></td>
-            `;
-            tableBody.appendChild(newRow);
-        }
+			const adjustedBreakfast = isFirstOrLastDay ? breakfast * 0.75 : breakfast;
+			const adjustedLunch = isFirstOrLastDay ? lunch * 0.75 : lunch;
+			const adjustedDinner = isFirstOrLastDay ? dinner * 0.75 : dinner;
+			const adjustedIncidentals = isFirstOrLastDay ? incidentals * 0.75 : incidentals;
+			const adjustedOther = isFirstOrLastDay ? other * 0.75 : other;
 
-        function removeDayRow() {
-            const tableBody = document.getElementById('expenseTableBody');
-            if (tableBody.rows.length > 1) {
-                tableBody.deleteRow(-1);
-                calculateTotal();
-            }
-        }
+			const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+			const totalPerDay = adjustedBreakfast + adjustedLunch + adjustedDinner + adjustedIncidentals + adjustedOther + mileageAmount;
+			
+			row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
+			calculateTotal();
+		}
 
-        function calculateBalance() {
-            const total = parseFloat(document.getElementById("totalAmount").innerText.replace('$', '')) || 0;
-            const advance = parseFloat(document.querySelector("input[type='number']").value) || 0;
-            document.getElementById("dueEmployee").innerText = `$${(total - advance).toFixed(2)}`;
-            document.getElementById("dueMCHD").innerText = `$${(advance - total).toFixed(2)}`;
-        }
+		function calculateTotal() {
+			const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
+			const total = Array.from(rows).reduce((sum, row) => {
+				const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
+				return sum + perDayTotal;
+			}, 0);
+
+			document.getElementById("totalAmount").innerText = `$${total.toFixed(2)}`;
+			calculateBalance();
+		}
+
+		function calculateBalance() {
+			const total = parseFloat(document.getElementById("totalAmount").innerText.replace('$', '')) || 0;
+			const advance = parseFloat(document.querySelector("input[type='number']").value) || 0;
+			const dueEmployee = total > advance ? total - advance : 0;
+			const dueMCHD = advance > total ? advance - total : 0;
+
+			document.getElementById("dueEmployee").innerText = `$${dueEmployee.toFixed(2)}`;
+			document.getElementById("dueMCHD").innerText = `$${dueMCHD.toFixed(2)}`;
+		}
     </script>
 </body>
 </html>
