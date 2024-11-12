@@ -6,7 +6,11 @@
     <title>MCHD Travel Expense Account Settlement Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .bordered { border: 1px solid #ccc; }
+        .from-to-field {
+			overflow: hidden; /* Hide scrollbars */
+			resize: none; /* Prevent manual resizing */
+		}
+		.bordered { border: 1px solid #ccc; }
         .bg-gray-200 { background-color: #f7f7f7; }
         .bg-blue-light { background-color: #e3f2fd; }
         .text-center { text-align: center; }
@@ -64,8 +68,12 @@
             <tbody id="expenseTableBody">
                 <tr class="bg-gray-100">
                     <td class="bordered p-2"><input type="date" class="border p-2 w-full rounded"></td>
-                    <td class="bordered p-2"><textarea class="border p-2 w-full rounded resize-none" rows="1"></textarea></td>
-					<td class="bordered p-2"><textarea class="border p-2 w-full rounded resize-none" rows="1"></textarea></td>
+                    <td class="bordered p-2">
+						<textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" oninput="autoResize(this)"></textarea>
+					</td>
+					<td class="bordered p-2">
+						<textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" oninput="autoResize(this)"></textarea>
+					</td>
                     <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculateMileageAmount(this)"></td>
                     <td class="bordered p-2"><span class="mileageAmount">$0.00</span></td>
                     <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
@@ -167,6 +175,11 @@
             document.getElementById("dueEmployee").innerText = `$${dueEmployee.toFixed(2)}`;
             document.getElementById("dueMCHD").innerText = `$${dueMCHD.toFixed(2)}`;
         }
+		
+		function autoResize(element) {
+			element.style.height = 'auto';
+			element.style.height = element.scrollHeight + 'px';
+		}
 		
 		function addDayRow() {
 			const tableBody = document.getElementById('expenseTableBody');
