@@ -6,7 +6,14 @@
     <title>MCHD Travel Expense Account Settlement Form</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .from-to-field {
+        .form-container {
+			width: 100%; /* Full width on small screens */
+			max-width: 1200px; /* Maximum width on larger screens */
+			margin: 0 auto; /* Center the form */
+			padding: 1rem; /* Add padding for spacing */
+		}
+
+		.from-to-field {
 			overflow: hidden; /* Hide scrollbars */
 			resize: none; /* Prevent manual resizing */
 			white-space: pre-wrap; /* Preserve whitespace and allow text wrapping */
@@ -27,7 +34,67 @@
         .p-4 { padding: 1rem; }
         .mt-4 { margin-top: 1rem; }
         .mb-4 { margin-bottom: 1rem; }
-        .input-expanded { width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        .input-expanded { width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		table {
+			width: 100%; /* Full width of container */
+			border-collapse: collapse; /* Merge borders for a cleaner look */
+		}
+
+		td, th {
+			padding: 0.5rem; /* Add padding for readability */
+			border: 1px solid #ddd; /* Border for cells */
+			width: auto; /* Allow cells to adapt width */
+		}
+
+		input[type="text"], input[type="date"], input[type="number"], textarea {
+			width: 100%; /* Take full width of cell */
+			box-sizing: border-box; /* Include padding and border in the width */
+			font-size: 1rem; /* Responsive font size */
+		}
+
+		textarea {
+			overflow: hidden;
+			resize: none; /* Prevent manual resizing */
+			white-space: pre-wrap; /* Allow text wrapping */
+		}
+		
+		.flex-container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 1rem;
+		}
+
+		.flex-item {
+			flex: 1 1 100%; /* Full width on small screens */
+		}
+
+		@media (min-width: 768px) {
+			.flex-item {
+				flex: 1 1 calc(50% - 1rem); /* Two columns on medium screens */
+			}
+		}
+
+		@media (min-width: 1024px) {
+			.flex-item {
+				flex: 1 1 calc(33.33% - 1rem); /* Three columns on larger screens */
+			}
+		}
+		
+		body {
+			font-size: 1rem; /* Base font size */
+		}
+
+		@media (min-width: 768px) {
+			body {
+				font-size: 1.1rem; /* Slightly larger font on medium screens */
+			}
+		}
+
+		@media (min-width: 1024px) {
+			body {
+				font-size: 1.2rem; /* Larger font on large screens */
+			}
+		}
     </style>
 </head>
 <body class="p-8 bg-green-500">
@@ -98,13 +165,13 @@
         </div>
 
         <!-- Summary Section -->
-        <div class="grid grid-cols-2 gap-4 mt-8">
-			<div class="font-bold">Total Mileage:</div>
-			<div><span id="totalMileage" class="font-bold">$0.00</span></div>
-			<div class="font-bold">Total Per Day:</div>
-			<div><span id="totalPerDay" class="font-bold">$0.00</span></div>
-			<div class="font-bold">Total Due Employee:</div>
-			<div><span id="totalDueEmployee" class="font-bold">$0.00</span></div>
+        <div class="flex-container mt-8">
+			<div class="flex-item font-bold">Total Mileage:</div>
+			<div class="flex-item"><span id="totalMileage" class="font-bold">$0.00</span></div>
+			<div class="flex-item font-bold">Total Per Day:</div>
+			<div class="flex-item"><span id="totalPerDay" class="font-bold">$0.00</span></div>
+			<div class="flex-item font-bold">Total Due Employee:</div>
+			<div class="flex-item"><span id="totalDueEmployee" class="font-bold">$0.00</span></div>
 		</div>
 
         <!-- Signature Section -->
