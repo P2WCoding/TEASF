@@ -94,15 +94,13 @@
 
         <!-- Summary Section -->
         <div class="grid grid-cols-2 gap-4 mt-8">
-            <div class="font-bold">Total:</div>
-            <div><span id="totalAmount" class="font-bold">$0.00</span></div>
-            <div class="font-bold">Less Cash Advance:</div>
-            <div><input type="number" class="border p-2 w-full rounded" oninput="calculateBalance()"></div>
-            <div class="font-bold">Due Employee:</div>
-            <div><span id="dueEmployee" class="font-bold">$0.00</span></div>
-            <div class="font-bold">Due MCHD:</div>
-            <div><span id="dueMCHD" class="font-bold">$0.00</span></div>
-        </div>
+			<div class="font-bold">Total Mileage:</div>
+			<div><span id="totalMileage" class="font-bold">$0.00</span></div>
+			<div class="font-bold">Total Per Day:</div>
+			<div><span id="totalPerDay" class="font-bold">$0.00</span></div>
+			<div class="font-bold">Total Due Employee:</div>
+			<div><span id="totalDueEmployee" class="font-bold">$0.00</span></div>
+		</div>
 
         <!-- Signature Section -->
 		<div class="mt-8 p-4 bordered bg-gray-100 rounded-lg">
@@ -155,26 +153,45 @@
             calculateTotal();
         }
 
-        function calculateTotal() {
-            const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
-            const total = Array.from(rows).reduce((sum, row) => {
-                const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
-                return sum + perDayTotal;
-            }, 0);
+        function calculateTotals() {
+			const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
 
-            document.getElementById("totalAmount").innerText = `$${total.toFixed(2)}`;
-            calculateBalance();
-        }
+			let totalMileage = 0;
+			let totalPerDay = 0;
 
-        function calculateBalance() {
-            const total = parseFloat(document.getElementById("totalAmount").innerText.replace('$', '')) || 0;
-            const advance = parseFloat(document.querySelector("input[type='number']").value) || 0;
-            const dueEmployee = total > advance ? total - advance : 0;
-            const dueMCHD = advance > total ? advance - total : 0;
+			rows.forEach(row => {
+				// Calculate Total Mileage by summing up the "Mileage Amount" column
+				const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+				totalMileage += mileageAmount;
 
-            document.getElementById("dueEmployee").innerText = `$${dueEmployee.toFixed(2)}`;
-            document.getElementById("dueMCHD").innerText = `$${dueMCHD.toFixed(2)}`;
-        }
+				// Calculate Total Per Day by summing up the "Total Per Day" column
+				const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
+				totalPerDay += perDayTotal;
+			});
+
+			// Display the results
+			document.getElementById("totalMileage").innerText = `$${totalMileage.toFixed(2)}`;
+			document.getElementById("totalPerDay").innerText = `$${totalPerDay.toFixed(2)}`;
+
+			// Calculate Total Due Employee (Total Mileage + Total Per Day)
+			const totalDueEmployee = totalMileage + totalPerDay;
+			document.getElementById("totalDueEmployee").innerText = `$${totalDueEmployee.toFixed(2)}`;
+		}
+
+		// Ensure to call calculateTotals() after each update
+		function calculateMileageAmount(input) {
+			const miles = parseFloat(input.value) || 0;
+			const mileageAmount = miles * 0.67; // Assuming $0.67 per mile as the rate
+			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
+			calculateTotals(); // Update totals after calculation
+		}
+
+		function calculatePerDiem(input) {
+			const row = input.closest('tr');
+			// Calculation logic for per diem...
+
+			calculateTotals(); // Update totals after calculation
+		}
 		
 		function autoResize(element) {
 			element.style.height = 'auto';
