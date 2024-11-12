@@ -210,14 +210,19 @@
 			const tableBody = row.closest('tbody');
 			const isFirstOrLastDay = (row === tableBody.rows[0] || row === tableBody.rows[tableBody.rows.length - 1]);
 
+			// Get per diem values and apply multiplier based on day position
 			const perDiemColumns = Array.from(row.querySelectorAll('input[type="number"]')).slice(4, 9); // B, L, D, I, Other columns
 			const perDiemTotal = perDiemColumns.reduce((acc, el) => acc + (parseFloat(el.value) || 0), 0);
 			const multiplier = isFirstOrLastDay ? 0.75 : 1;
 
+			// Calculate mileage amount
 			const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
 			const totalPerDay = (perDiemTotal * multiplier) + mileageAmount;
+
+			// Update total per day for the row
 			row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
 
+			// Recalculate overall totals
 			calculateTotals();
 		}
 
