@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travel Expense Form</title>
+    <title>MCHD Travel Expense Account Settlement Form</title>
     <style>
-        /* Main container styling with original background color */
+        /* Main container styling */
         .form-container {
             max-width: 1200px;
+            width: 90%; /* Stretch to fit more of the window */
             margin: 0 auto;
-            padding: 2rem;
-            background-color: #d6eaf8; /* Original light blue background */
+            padding: 1rem;
+            background-color: #d6eaf8;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Instructions section */
+        .instructions {
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         /* Table styling */
@@ -77,12 +85,6 @@
             font-size: 1.1rem;
         }
 
-        /* Highlight effect */
-        .highlight {
-            background-color: #e0f7fa;
-            transition: background-color 0.3s ease;
-        }
-
         /* Button styling */
         .button-group {
             display: flex;
@@ -98,19 +100,33 @@
         }
 
         .button-group .add-day {
-            background-color: #28a745; /* Green for Add Day */
+            background-color: #28a745;
             color: white;
         }
 
         .button-group .remove-day {
-            background-color: #dc3545; /* Red for Remove Day */
+            background-color: #dc3545;
             color: white;
         }
     </style>
 </head>
 <body>
     <div class="form-container">
+        <!-- Instructions Section -->
+        <div class="instructions">
+            <p><strong>Traveler Instructions:</strong> Complete all applicable sections of this form based on actual travel expenses and forward it to your supervisor for approval. Attach all supporting documents.</p>
+            <p><strong>Supervisor Instructions:</strong> Review and approve the completed form, then submit it to the Business Office within 30 days of the last day of travel.</p>
+        </div>
+
         <form>
+            <!-- Name and Mileage Rate Fields -->
+            <div class="totals-section">
+                <div class="totals-item">Name: <input type="text" placeholder="Enter Name" required></div>
+                <div class="totals-item">Mileage Rate: <span>$0.67</span></div>
+                <div class="totals-item">Total Miles: <input type="text" id="totalMiles" readonly></div>
+            </div>
+
+            <!-- Table of Expenses -->
             <table>
                 <thead>
                     <tr>
@@ -129,10 +145,10 @@
                 </thead>
                 <tbody id="expenseTableBody">
                     <tr>
-                        <td><input type="date"></td>
-                        <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                        <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                        <td><input type="number" value="0" oninput="calculateMileageAmount(this)"></td>
+                        <td><input type="date" required></td>
+                        <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                        <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                        <td><input type="number" value="0" oninput="calculateMileageAmount(this)" required></td>
                         <td><span class="mileageAmount">$0.00</span></td>
                         <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
                         <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
@@ -147,12 +163,18 @@
             <div class="totals-section">
                 <div class="totals-item">Total Mileage: <span id="totalMileage">$0.00</span></div>
                 <div class="totals-item">Total Per Day: <span id="totalPerDay">$0.00</span></div>
-                <div class="totals-item">Total Due Employee: <span id="totalDueEmployee" class="highlight">$0.00</span></div>
+                <div class="totals-item">Total Due Employee: <span id="totalDueEmployee">$0.00</span></div>
             </div>
 
             <div class="button-group">
                 <button type="button" class="add-day" onclick="addDay()">Add Day</button>
                 <button type="button" class="remove-day" onclick="removeDay()">Remove Day</button>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="totals-section">
+                <div class="totals-item">Employee Signature: <input type="text" required></div>
+                <div class="totals-item">Date: <input type="date" required></div>
             </div>
         </form>
     </div>
@@ -205,10 +227,10 @@
             const tableBody = document.getElementById('expenseTableBody');
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td><input type="date"></td>
-                <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                <td><input type="number" value="0" oninput="calculateMileageAmount(this)"></td>
+                <td><input type="date" required></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                <td><input type="number" value="0" oninput="calculateMileageAmount(this)" required></td>
                 <td><span class="mileageAmount">$0.00</span></td>
                 <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
                 <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
