@@ -17,6 +17,10 @@
         .mt-4 { margin-top: 1rem; }
         .mb-4 { margin-bottom: 1rem; }
         .input-expanded { width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		textarea {
+			overflow-wrap: break-word; /* Ensures long text wraps within the textarea */
+			white-space: pre-wrap; /* Preserves spaces and allows for text wrapping */
+		}
     </style>
 </head>
 <body class="p-8 bg-green-500">
@@ -60,8 +64,8 @@
             <tbody id="expenseTableBody">
                 <tr class="bg-gray-100">
                     <td class="bordered p-2"><input type="date" class="border p-2 w-full rounded"></td>
-                    <td class="bordered p-2"><input type="text" class="border p-2 w-full input-expanded rounded"></td>
-                    <td class="bordered p-2"><input type="text" class="border p-2 w-full input-expanded rounded"></td>
+                    <td class="bordered p-2"><textarea class="border p-2 w-full rounded resize-none" rows="1"></textarea></td>
+					<td class="bordered p-2"><textarea class="border p-2 w-full rounded resize-none" rows="1"></textarea></td>
                     <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculateMileageAmount(this)"></td>
                     <td class="bordered p-2"><span class="mileageAmount">$0.00</span></td>
                     <td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculatePerDiem(this)"></td>
