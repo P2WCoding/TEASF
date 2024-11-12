@@ -95,6 +95,12 @@
 				font-size: 1.2rem; /* Larger font on large screens */
 			}
 		}
+		
+		@media (max-width: 600px) {
+			td, th {
+				font-size: 0.9rem;
+			}
+		}
     </style>
 </head>
 <body class="p-8 bg-green-500">
@@ -194,94 +200,54 @@
     <script>
         const mileageRate = 0.67;
 
-        function calculateMileageAmount(input) {
-            const miles = parseFloat(input.value) || 0;
-            const mileageAmount = miles * mileageRate;
-            input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
-            calculateTotal();
-        }
+		function calculateMileageAmount(input) {
+			const miles = parseFloat(input.value) || 0;
+			const mileageAmount = miles * mileageRate;
+			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
+			calculateTotals();
+		}
+		
+		document.addEventListener('input', function(event) {
+			if (event.target.matches('.from-to-field')) autoResizeTextArea(event.target);
+			if (event.target.matches('[type="number"]')) calculateTotals();
+		});
 
-        function calculatePerDiem(input) {
-            const row = input.closest('tr');
-            const rowIndex = Array.from(document.getElementById("expenseTableBody").rows).indexOf(row);
-            const isFirstOrLastDay = (rowIndex === 0 || rowIndex === document.getElementById("expenseTableBody").rows.length - 1);
+		function calculatePerDiem(input) {
+			const row = input.closest('tr');
+			const isFirstOrLastDay = row === row.closest('tbody').rows[0] || row === row.closest('tbody').lastElementChild;
 
-            const breakfast = parseFloat(row.querySelectorAll('input[type="number"]')[1].value) || 0;
-            const lunch = parseFloat(row.querySelectorAll('input[type="number"]')[2].value) || 0;
-            const dinner = parseFloat(row.querySelectorAll('input[type="number"]')[3].value) || 0;
-            const incidentals = parseFloat(row.querySelectorAll('input[type="number"]')[4].value) || 0;
-            const other = parseFloat(row.querySelectorAll('input[type="number"]')[5].value) || 0;
+			const [breakfast, lunch, dinner, incidentals, other] = Array.from(row.querySelectorAll('input[type="number"]')).slice(1, 6).map(input => parseFloat(input.value) || 0);
+			const multiplier = isFirstOrLastDay ? 0.75 : 1;
+			
+			const totalPerDay = (breakfast + lunch + dinner + incidentals + other) * multiplier + parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+			row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
+			calculateTotals();
+		}
 
-            const adjustedBreakfast = isFirstOrLastDay ? breakfast * 0.75 : breakfast;
-            const adjustedLunch = isFirstOrLastDay ? lunch * 0.75 : lunch;
-            const adjustedDinner = isFirstOrLastDay ? dinner * 0.75 : dinner;
-            const adjustedIncidentals = isFirstOrLastDay ? incidentals * 0.75 : incidentals;
-            const adjustedOther = isFirstOrLastDay ? other * 0.75 : other;
-
-            const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-            const totalPerDay = adjustedBreakfast + adjustedLunch + adjustedDinner + adjustedIncidentals + adjustedOther + mileageAmount;
-
-            row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
-            calculateTotal();
-        }
-
-        function calculateTotals() {
-			const rows = document.getElementById("expenseTableBody").querySelectorAll('tr');
-
+		function calculateTotals() {
+			const rows = document.querySelectorAll("#expenseTableBody tr");
 			let totalMileage = 0;
 			let totalPerDay = 0;
 
 			rows.forEach(row => {
-				// Calculate Total Mileage by summing up the "Mileage Amount" column
-				const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-				totalMileage += mileageAmount;
-
-				// Calculate Total Per Day by summing up the "Total Per Day" column
-				const perDayTotal = parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
-				totalPerDay += perDayTotal;
+				totalMileage += parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+				totalPerDay += parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
 			});
 
-			// Display the results
 			document.getElementById("totalMileage").innerText = `$${totalMileage.toFixed(2)}`;
 			document.getElementById("totalPerDay").innerText = `$${totalPerDay.toFixed(2)}`;
-
-			// Calculate Total Due Employee (Total Mileage + Total Per Day)
-			const totalDueEmployee = totalMileage + totalPerDay;
-			document.getElementById("totalDueEmployee").innerText = `$${totalDueEmployee.toFixed(2)}`;
+			document.getElementById("totalDueEmployee").innerText = `$${(totalMileage + totalPerDay).toFixed(2)}`;
 		}
 
-		// Ensure to call calculateTotals() after each update
-		function calculateMileageAmount(input) {
-			const miles = parseFloat(input.value) || 0;
-			const mileageAmount = miles * 0.67; // Assuming $0.67 per mile as the rate
-			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
-			calculateTotals(); // Update totals after calculation
-		}
-
-		function calculatePerDiem(input) {
-			const row = input.closest('tr');
-			// Calculation logic for per diem...
-
-			calculateTotals(); // Update totals after calculation
-		}
-		
 		function autoResizeTextArea(element) {
-			element.style.height = 'auto'; // Reset the height
-			element.style.height = element.scrollHeight + 'px'; // Set to scroll height
+			element.style.height = 'auto';
+			element.style.height = element.scrollHeight + 'px';
 		}
-		
-		function removeDay() {
-			const tableBody = document.getElementById('expenseTableBody');
-			if (tableBody.rows.length > 1) {
-				tableBody.deleteRow(-1);
-			}
-		}
-		
+
 		function addDay() {
 			const tableBody = document.getElementById('expenseTableBody');
 			const newRow = document.createElement('tr');
 			newRow.classList.add('bg-gray-100');
-
 			newRow.innerHTML = `
 				<td class="bordered p-2"><input type="date" class="border p-2 w-full rounded"></td>
 				<td class="bordered p-2"><textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
@@ -295,8 +261,14 @@
 				<td class="bordered p-2"><input type="number" class="border p-2 w-full rounded" value="0"></td>
 				<td class="bordered p-2 text-center"><span class="totalPerDay">$0.00</span></td>
 			`;
-
 			tableBody.appendChild(newRow);
+		}
+
+		function removeDay() {
+			const tableBody = document.getElementById('expenseTableBody');
+			if (tableBody.rows.length > 1) {
+				tableBody.deleteRow(-1);
+			}
 		}
     </script>
 </body>
