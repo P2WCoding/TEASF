@@ -3,65 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Travel Expense Form</title>
+    <title>Travel Expense Form</title>
     <style>
-        /* Main styling */
+        /* Main container styling */
         .form-container {
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1rem;
+            padding: 2rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        /* Table styling */
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 1.5rem;
         }
 
-        td, th {
-            padding: 0.5rem;
+        th, td {
+            padding: 0.75rem;
             border: 1px solid #ddd;
-            font-size: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f1f1f1;
+            font-weight: bold;
         }
 
         input[type="text"], input[type="date"], input[type="number"], textarea {
             width: 100%;
             box-sizing: border-box;
-            font-size: 1rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
         }
 
-        .from-to-field {
-            overflow: hidden;
+        textarea {
             resize: none;
-            white-space: pre-wrap;
-            overflow-wrap: break-word;
+            overflow: hidden;
         }
 
-        /* Highlight effect for Total Due Employee */
+        /* Responsive layout adjustments */
+        @media (max-width: 768px) {
+            th, td {
+                font-size: 0.8rem;
+                padding: 0.5rem;
+            }
+
+            .form-container {
+                padding: 1rem;
+            }
+        }
+
+        /* Totals section */
+        .totals-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .totals-item {
+            flex: 1 1 100%;
+            margin-bottom: 0.5rem;
+        }
+
+        .totals-item span {
+            font-size: 1.1rem;
+        }
+
+        /* Highlight effect */
         .highlight {
             background-color: #e0f7fa;
             transition: background-color 0.3s ease;
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            td, th {
-                font-size: 0.8rem;
-                padding: 0.4rem;
-            }
-            .form-container {
-                padding: 0.5rem;
-            }
+        /* Button styling */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .button-group button {
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .button-group .add-day {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .button-group .remove-day {
+            background-color: #f44336;
+            color: white;
         }
     </style>
 </head>
 <body>
     <div class="form-container">
         <form>
-            <!-- Table of Expenses -->
             <table>
                 <thead>
-                    <tr class="bg-gray-200">
+                    <tr>
                         <th>Date of Travel</th>
                         <th>From</th>
                         <th>To</th>
@@ -76,36 +128,31 @@
                     </tr>
                 </thead>
                 <tbody id="expenseTableBody">
-                    <tr class="bg-gray-100">
-                        <td><input type="date" class="border p-2 w-full rounded"></td>
-                        <td><textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" aria-label="From address" oninput="autoResizeTextArea(this)"></textarea></td>
-                        <td><textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" aria-label="To address" oninput="autoResizeTextArea(this)"></textarea></td>
-                        <td><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculateMileageAmount(this)"></td>
+                    <tr>
+                        <td><input type="date"></td>
+                        <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
+                        <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
+                        <td><input type="number" value="0" oninput="calculateMileageAmount(this)"></td>
                         <td><span class="mileageAmount">$0.00</span></td>
-                        <td><input type="number" class="border p-2 w-full rounded breakfast" value="0"></td>
-                        <td><input type="number" class="border p-2 w-full rounded lunch" value="0"></td>
-                        <td><input type="number" class="border p-2 w-full rounded dinner" value="0"></td>
-                        <td><input type="number" class="border p-2 w-full rounded incidentals" value="0"></td>
-                        <td><input type="number" class="border p-2 w-full rounded other" value="0"></td>
+                        <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                        <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                        <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                        <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                        <td><input type="number" value="0"></td>
                         <td><span class="totalPerDay">$0.00</span></td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- Total Section -->
-            <div class="flex-container mt-8">
-                <div class="font-bold">Total Mileage:</div>
-                <div><span id="totalMileage" class="font-bold">$0.00</span></div>
-                <div class="font-bold">Total Per Day:</div>
-                <div><span id="totalPerDay" class="font-bold">$0.00</span></div>
-                <div class="font-bold">Total Due Employee:</div>
-                <div><span id="totalDueEmployee" class="font-bold">$0.00</span></div>
+            <div class="totals-section">
+                <div class="totals-item">Total Mileage: <span id="totalMileage">$0.00</span></div>
+                <div class="totals-item">Total Per Day: <span id="totalPerDay">$0.00</span></div>
+                <div class="totals-item">Total Due Employee: <span id="totalDueEmployee" class="highlight">$0.00</span></div>
             </div>
 
-            <!-- Add/Remove Day Buttons -->
-            <div class="mt-4 flex space-x-4">
-                <button type="button" onclick="addDay()" class="bg-blue-500 text-white py-2 px-4 rounded">Add Day</button>
-                <button type="button" onclick="removeDay()" class="bg-red-500 text-white py-2 px-4 rounded">Remove Day</button>
+            <div class="button-group">
+                <button type="button" class="add-day" onclick="addDay()">Add Day</button>
+                <button type="button" class="remove-day" onclick="removeDay()">Remove Day</button>
             </div>
         </form>
     </div>
@@ -129,15 +176,12 @@
             const row = input.closest('tr');
             const isFirstOrLastDay = row === row.closest('tbody').rows[0] || row === row.closest('tbody').lastElementChild;
 
-            const breakfast = parseFloat(row.querySelector('.breakfast').value) || 0;
-            const lunch = parseFloat(row.querySelector('.lunch').value) || 0;
-            const dinner = parseFloat(row.querySelector('.dinner').value) || 0;
-            const incidentals = parseFloat(row.querySelector('.incidentals').value) || 0;
-            const other = parseFloat(row.querySelector('.other').value) || 0;
+            const perDiemValues = Array.from(row.querySelectorAll('input[type="number"]')).slice(4, 9);
+            const perDiemTotal = perDiemValues.reduce((acc, el) => acc + (parseFloat(el.value) || 0), 0);
             const multiplier = isFirstOrLastDay ? 0.75 : 1;
-
+            
             const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-            const totalPerDay = (breakfast + lunch + dinner + incidentals + other) * multiplier + mileageAmount;
+            const totalPerDay = (perDiemTotal * multiplier) + mileageAmount;
             row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
             calculateTotals();
         }
@@ -154,30 +198,23 @@
 
             document.getElementById("totalMileage").innerText = `$${totalMileage.toFixed(2)}`;
             document.getElementById("totalPerDay").innerText = `$${totalPerDay.toFixed(2)}`;
-
-            const totalDueEmployee = totalMileage + totalPerDay;
-            const totalDueEmployeeElement = document.getElementById("totalDueEmployee");
-            totalDueEmployeeElement.innerText = `$${totalDueEmployee.toFixed(2)}`;
-            totalDueEmployeeElement.classList.add("highlight");
-
-            setTimeout(() => totalDueEmployeeElement.classList.remove("highlight"), 1000);
+            document.getElementById("totalDueEmployee").innerText = `$${(totalMileage + totalPerDay).toFixed(2)}`;
         }
 
         function addDay() {
             const tableBody = document.getElementById('expenseTableBody');
             const newRow = document.createElement('tr');
-            newRow.classList.add('bg-gray-100');
             newRow.innerHTML = `
-                <td><input type="date" class="border p-2 w-full rounded"></td>
-                <td><textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                <td><textarea class="border p-2 w-full rounded resize-none from-to-field" rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
-                <td><input type="number" class="border p-2 w-full rounded" value="0" oninput="calculateMileageAmount(this)"></td>
+                <td><input type="date"></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)"></textarea></td>
+                <td><input type="number" value="0" oninput="calculateMileageAmount(this)"></td>
                 <td><span class="mileageAmount">$0.00</span></td>
-                <td><input type="number" class="border p-2 w-full rounded breakfast" value="0" oninput="calculatePerDiem(this)"></td>
-                <td><input type="number" class="border p-2 w-full rounded lunch" value="0" oninput="calculatePerDiem(this)"></td>
-                <td><input type="number" class="border p-2 w-full rounded dinner" value="0" oninput="calculatePerDiem(this)"></td>
-                <td><input type="number" class="border p-2 w-full rounded incidentals" value="0" oninput="calculatePerDiem(this)"></td>
-                <td><input type="number" class="border p-2 w-full rounded other" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0"></td>
                 <td><span class="totalPerDay">$0.00</span></td>
             `;
             tableBody.appendChild(newRow);
