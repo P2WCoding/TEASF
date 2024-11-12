@@ -181,6 +181,13 @@
 			element.style.height = element.scrollHeight + 'px';
 		}
 		
+		function removeDay() {
+			const tableBody = document.getElementById('expenseTableBody');
+			if (tableBody.rows.length > 1) {
+				tableBody.deleteRow(-1);
+			}
+		}
+		
 		function addDay() {
 			const tableBody = document.getElementById('expenseTableBody');
 			const newRow = document.createElement('tr');
