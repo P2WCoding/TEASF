@@ -163,7 +163,7 @@
                         <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
                         <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
                         <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-                        <td><input type="number" value="0"></td>
+                        <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
                         <td><span class="totalPerDay">$0.00</span></td>
                     </tr>
                 </tbody>
@@ -199,75 +199,83 @@
         }
 
         function calculateMileageAmount(input) {
-			const miles = parseFloat(input.value) || 0;
-			const mileageAmount = miles * getMileageRate();
-			input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
-			calculateTotals();
-		}
+            const miles = parseFloat(input.value) || 0;
+            const mileageAmount = miles * getMileageRate();
+            input.closest('tr').querySelector('.mileageAmount').innerText = `$${mileageAmount.toFixed(2)}`;
+            calculateTotals();
+        }
 
-		function calculatePerDiem(input) {
-			const row = input.closest('tr');
-			const tableBody = row.closest('tbody');
-			const isFirstOrLastDay = (row === tableBody.rows[0] || row === tableBody.rows[tableBody.rows.length - 1]);
+        function calculatePerDiem(input) {
+            const row = input.closest('tr');
+            const perDiemColumns = Array.from(row.querySelectorAll('input[type="number"]')).slice(4, 9); // B, L, D, I, Other columns
+            const perDiemTotal = perDiemColumns.reduce((acc, el) => acc + (parseFloat(el.value) || 0), 0);
+            const multiplier = (row === row.closest('tbody').rows[0] || row === row.closest('tbody').rows[row.closest('tbody').rows.length - 1]) ? 0.75 : 1;
+            const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
+            const totalPerDay = (perDiemTotal * multiplier) + mileageAmount;
+            row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
+            calculateTotals();
+        }
 
-			// Get per diem values and apply multiplier based on day position
-			const perDiemColumns = Array.from(row.querySelectorAll('input[type="number"]')).slice(4, 9); // B, L, D, I, Other columns
-			const perDiemTotal = perDiemColumns.reduce((acc, el) => acc + (parseFloat(el.value) || 0), 0);
-			const multiplier = isFirstOrLastDay ? 0.75 : 1;
+        function calculateTotals() {
+            const rows = document.querySelectorAll("#expenseTableBody tr");
+            let totalMileage = 0;
+            let totalPerDay = 0;
 
-			// Calculate mileage amount
-			const mileageAmount = parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-			const totalPerDay = (perDiemTotal * multiplier) + mileageAmount;
+            rows.forEach(row => {
+                const mileageText = row.querySelector('.mileageAmount').innerText;
+                const mileageAmount = parseFloat(mileageText.replace('$', '')) || 0;
+                totalMileage += mileageAmount;
 
-			// Update total per day for the row
-			row.querySelector('.totalPerDay').innerText = `$${totalPerDay.toFixed(2)}`;
+                const totalPerDayText = row.querySelector('.totalPerDay').innerText;
+                const totalDayAmount = parseFloat(totalPerDayText.replace('$', '')) || 0;
+                totalPerDay += totalDayAmount;
+            });
 
-			// Recalculate overall totals
-			calculateTotals();
-		}
+            document.getElementById("totalMileage").innerText = `$${totalMileage.toFixed(2)}`;
+            document.getElementById("totalPerDay").innerText = `$${totalPerDay.toFixed(2)}`;
+            document.getElementById("totalDueEmployee").innerText = `$${(totalMileage + totalPerDay).toFixed(2)}`;
+        }
 
-		function calculateTotals() {
-			const rows = document.querySelectorAll("#expenseTableBody tr");
-			let totalMileage = 0;
-			let totalPerDay = 0;
+        function addDay() {
+            const tableBody = document.getElementById('expenseTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td><input type="date" required></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                <td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
+                <td><input type="number" value="0" oninput="calculateMileageAmount(this)" required></td>
+                <td><span class="mileageAmount">$0.00</span></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
+                <td><span class="totalPerDay">$0.00</span></td>
+            `;
+            tableBody.appendChild(newRow);
+            calculateTotals(); // Recalculate totals after adding a row
+        }
 
-			rows.forEach(row => {
-				totalMileage += parseFloat(row.querySelector('.mileageAmount').innerText.replace('$', '')) || 0;
-				totalPerDay += parseFloat(row.querySelector('.totalPerDay').innerText.replace('$', '')) || 0;
-			});
+        function removeDay() {
+            const tableBody = document.getElementById('expenseTableBody');
+            if (tableBody.rows.length > 1) {
+                tableBody.deleteRow(-1);
+                calculateTotals(); // Recalculate totals after removing a row
+            }
+        }
 
-			document.getElementById("totalMileage").innerText = `$${totalMileage.toFixed(2)}`;
-			document.getElementById("totalPerDay").innerText = `$${totalPerDay.toFixed(2)}`;
-			document.getElementById("totalDueEmployee").innerText = `$${(totalMileage + totalPerDay).toFixed(2)}`;
-		}
+        document.getElementById("mileageRate").addEventListener("input", () => {
+            document.querySelectorAll('#expenseTableBody tr').forEach(row => {
+                calculateMileageAmount(row.querySelector('input[type="number"]'));
+            });
+        });
 
-		function addDay() {
-			const tableBody = document.getElementById('expenseTableBody');
-			const newRow = document.createElement('tr');
-			newRow.innerHTML = `
-				<td><input type="date" required></td>
-				<td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
-				<td><textarea rows="1" oninput="autoResizeTextArea(this)" required></textarea></td>
-				<td><input type="number" value="0" oninput="calculateMileageAmount(this)" required></td>
-				<td><span class="mileageAmount">$0.00</span></td>
-				<td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-				<td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-				<td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-				<td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-				<td><input type="number" value="0" oninput="calculatePerDiem(this)"></td>
-				<td><span class="totalPerDay">$0.00</span></td>
-			`;
-			tableBody.appendChild(newRow);
-			calculateTotals(); // Recalculate totals after adding a row
-		}
-
-		function removeDay() {
-			const tableBody = document.getElementById('expenseTableBody');
-			if (tableBody.rows.length > 1) {
-				tableBody.deleteRow(-1);
-				calculateTotals(); // Recalculate totals after removing a row
-			}
-		}
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('input', () => {
+                calculateMileageAmount(input);
+                calculatePerDiem(input);
+            });
+        });
     </script>
 </body>
 </html>
